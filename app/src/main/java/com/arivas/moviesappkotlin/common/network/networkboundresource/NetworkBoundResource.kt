@@ -2,6 +2,7 @@ package com.arivas.moviesappkotlin.common.network.networkboundresource
 
 import android.annotation.SuppressLint
 import android.os.AsyncTask
+import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
@@ -14,10 +15,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 
-abstract class NetworkBoundResource<ResultType, RequestType> {
-    @MainThread constructor()
+abstract class NetworkBoundResource<ResultType, RequestType> @MainThread constructor() {
     private val result = MediatorLiveData<Resource<ResultType>>()
-
 
     init {
         result.value = Resource.loading(null)
@@ -48,6 +47,8 @@ abstract class NetworkBoundResource<ResultType, RequestType> {
                 saveResultAndReInit(response)
             },{ error ->
                 onFetchFailed()
+                Log.e("Error:", error.localizedMessage)
+                error.printStackTrace()
                 result.removeSource(dbSource)
                 result.addSource(dbSource, Observer { newData ->
                     result.value = Resource.error(error.message.toString(), newData)

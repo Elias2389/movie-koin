@@ -1,24 +1,24 @@
 package com.arivas.moviesappkotlin.application
 
 import android.app.Application
-import com.arivas.moviesappkotlin.di.component.ApplicationComponent
-import com.arivas.moviesappkotlin.di.component.DaggerApplicationComponent
-import com.arivas.moviesappkotlin.di.module.ApplicationModule
+import com.arivas.moviesappkotlin.di.module.applicationModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidFileProperties
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
 class BaseApp: Application() {
-
-    private lateinit var component: ApplicationComponent
 
     override fun onCreate() {
         super.onCreate()
 
-        component = DaggerApplicationComponent
-            .builder()
-            .applicationModule(ApplicationModule(this))
-            .build()
+        startKoin {
+            androidLogger()
+            androidContext(this@BaseApp)
+            androidFileProperties()
+            modules(applicationModule)
+        }
+
     }
 
-    fun getComponent(): DaggerApplicationComponent {
-        return component as DaggerApplicationComponent
-    }
 }

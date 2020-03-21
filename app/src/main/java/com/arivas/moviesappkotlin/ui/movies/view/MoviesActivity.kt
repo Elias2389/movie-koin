@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
@@ -12,7 +11,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.arivas.moviesappkotlin.R
-import com.arivas.moviesappkotlin.application.BaseApp
 import com.arivas.moviesappkotlin.common.dto.ResultsItem
 import com.arivas.moviesappkotlin.ui.movies.adapter.PopularMoviesRecyclerView
 import com.arivas.moviesappkotlin.ui.movies.repository.MoviesRepository
@@ -20,7 +18,7 @@ import com.arivas.moviesappkotlin.ui.movies.viewmodel.MoviesViewModel
 import com.arivas.moviesappkotlin.ui.movies.viewmodel.MoviesViewModelFactory
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 
 class MoviesActivity : AppCompatActivity() {
@@ -33,15 +31,14 @@ class MoviesActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
     private lateinit var adapter: PopularMoviesRecyclerView
 
-    @Inject lateinit var moviesViewModel: MoviesViewModel
-    @Inject lateinit var moviesRepository: MoviesRepository
+    lateinit var moviesViewModel: MoviesViewModel
+    private val moviesRepository: MoviesRepository by inject()
     private lateinit var moviesList: List<ResultsItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setInjectComponent()
         setup()
         getMovies()
     }
@@ -51,10 +48,6 @@ class MoviesActivity : AppCompatActivity() {
         setupSearchView()
         handlerCollapsing()
         moviesViewModel = getViewModelProvider()
-    }
-
-    private fun setInjectComponent() {
-        (application as BaseApp).getComponent().inject(this)
     }
 
     private fun getMovies() {
