@@ -3,11 +3,9 @@ package com.arivas.moviesappkotlin.di.module
 import com.arivas.moviesappkotlin.BuildConfig
 import com.arivas.moviesappkotlin.common.API_KEY
 import com.arivas.moviesappkotlin.common.db.AppDatabase
-import com.arivas.moviesappkotlin.common.db.MoviesDao
 import com.arivas.moviesappkotlin.common.network.services.MoviesServices
-import com.arivas.moviesappkotlin.ui.movies.repository.MoviesRepository
-import com.arivas.moviesappkotlin.ui.movies.repository.MoviesRepositoryImpl
 import com.arivas.moviesappkotlin.ui.movies.viewmodel.MoviesViewModel
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -19,7 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-val applicationModule = module(override = true) {
+val applicationModule = module {
 
     single { HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY) }
 
@@ -42,16 +40,13 @@ val applicationModule = module(override = true) {
     single {
         Retrofit.Builder()
         .baseUrl(BuildConfig.BASE_URL)
-        .client(get())
+        .client(get<OkHttpClient>())
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build() }
 
-    single { get<Retrofit>().create(MoviesServices::class.java) }
+    single<MoviesServices> { get<Retrofit>().create(MoviesServices::class.java) }
 
     single { AppDatabase.getInstance(androidContext()).moviesDao() }
 
-    single<MoviesRepository> { MoviesRepositoryImpl(get<MoviesServices>(), get<MoviesDao>()) }
-    //viewModel { MoviesViewModel(get<MoviesRepository>()) }
 
 }

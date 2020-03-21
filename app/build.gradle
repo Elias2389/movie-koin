@@ -23,6 +23,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,7 +61,7 @@ android {
 }
 
 ext {
-    retrofitVersion = "2.5.0"
+    retrofitVersion = "2.7.2"
     logginInterceptorVersion = "3.11.0"
     gsonVersion = "2.8.5"
     supportVersion = "28.0.0"
@@ -109,8 +110,13 @@ dependencies {
     kapt "android.arch.persistence.room:compiler:1.1.1"
 
     // Lifecycle components
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0'
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:1.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
+
 
     //RX java
     implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
@@ -135,6 +141,7 @@ dependencies {
     //Koin
     implementation "org.koin:koin-android:$koin_version"
     implementation "org.koin:koin-android-viewmodel:$koin_version"
+
 
     //Lottie
     implementation 'com.airbnb.android:lottie:3.3.0'

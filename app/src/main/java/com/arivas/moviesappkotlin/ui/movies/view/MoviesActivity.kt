@@ -3,6 +3,7 @@ package com.arivas.moviesappkotlin.ui.movies.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.SearchView
@@ -12,13 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.arivas.moviesappkotlin.R
 import com.arivas.moviesappkotlin.common.dto.ResultsItem
+import com.arivas.moviesappkotlin.common.network.services.MoviesServices
 import com.arivas.moviesappkotlin.ui.movies.adapter.PopularMoviesRecyclerView
-import com.arivas.moviesappkotlin.ui.movies.repository.MoviesRepository
 import com.arivas.moviesappkotlin.ui.movies.viewmodel.MoviesViewModel
 import com.arivas.moviesappkotlin.ui.movies.viewmodel.MoviesViewModelFactory
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import org.koin.android.ext.android.inject
+import retrofit2.Retrofit
 
 
 class MoviesActivity : AppCompatActivity() {
@@ -32,8 +34,9 @@ class MoviesActivity : AppCompatActivity() {
     private lateinit var adapter: PopularMoviesRecyclerView
 
     lateinit var moviesViewModel: MoviesViewModel
-    private val moviesRepository: MoviesRepository by inject()
     private lateinit var moviesList: List<ResultsItem>
+
+    private val retrofit: Retrofit by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +57,7 @@ class MoviesActivity : AppCompatActivity() {
         moviesViewModel
             .getPopularMovies()
             .observe(this, Observer {
-                it.data?.let { result -> successPopularMovies(result) }
+                it.body()?.results?.let { movies -> successPopularMovies(movies) }
         })
         showLoading()
     }
@@ -70,14 +73,14 @@ class MoviesActivity : AppCompatActivity() {
 
     private fun getViewModelProvider(): MoviesViewModel {
         return ViewModelProviders
-            .of(this, MoviesViewModelFactory(moviesRepository))
+            .of(this, MoviesViewModelFactory(retrofit.create(MoviesServices::class.java)))
             .get(MoviesViewModel::class.java)
     }
 
     private fun successPopularMovies(movies: List<ResultsItem>) {
-       moviesList = movies
-       hideLoading()
-       setupAdapter()
+        moviesList = movies
+        setupAdapter()
+        hideLoading()
     }
 
     private fun setupAdapter() {
@@ -102,7 +105,7 @@ class MoviesActivity : AppCompatActivity() {
                 visibility = View.GONE
                 cancelAnimation()
             }
-        }, 3000)
+        }, 2000)
     }
 
     private fun handlerCollapsing() {

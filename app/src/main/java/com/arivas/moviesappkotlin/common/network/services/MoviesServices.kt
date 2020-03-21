@@ -1,10 +1,11 @@
 package com.arivas.moviesappkotlin.common.network.services
 
 import com.arivas.moviesappkotlin.common.dto.MoviesResponse
-import io.reactivex.Observable
+import kotlinx.coroutines.Deferred
+import retrofit2.Response
 import retrofit2.http.GET
 
 interface MoviesServices {
     @GET("popular")
-    fun getPopularMovies(): Observable<MoviesResponse>
+    suspend fun getPopularMoviesAsync(): Response<MoviesResponse>
 }

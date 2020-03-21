@@ -1,13 +1,18 @@
 package com.arivas.moviesappkotlin.ui.movies.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import com.arivas.moviesappkotlin.common.dto.ResultsItem
-import com.arivas.moviesappkotlin.common.network.networkboundresource.Resource
-import com.arivas.moviesappkotlin.ui.movies.repository.MoviesRepository
+import androidx.lifecycle.*
+import com.arivas.moviesappkotlin.common.dto.MoviesResponse
+import com.arivas.moviesappkotlin.common.network.services.MoviesServices
+import retrofit2.Response
 
-class MoviesViewModel(private val moviesRepository: MoviesRepository): ViewModel() {
-    fun getPopularMovies(): LiveData<Resource<List<ResultsItem>>> {
-        return moviesRepository.getPopularMovies()
+class MoviesViewModel(private val moviesServices: MoviesServices): ViewModel() {
+
+    var movies = MutableLiveData<Response<MoviesResponse>>()
+
+    fun getPopularMovies(): LiveData<Response<MoviesResponse>> {
+        return liveData {
+            emit(moviesServices.getPopularMoviesAsync())
+        }
     }
+
 }
